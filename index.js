@@ -1,20 +1,20 @@
-let cardField = document.getElementById("scrapsField");
+let scrapsField = document.getElementById("scrapsField");
 let btnInput = document.getElementById("inputButton");
 let titleInput = document.getElementById("titleInput");
 let messageField = document.getElementById("messageField");
 
-let tasks = [];
+let scraps = [];
 
-function renderTasks() {
-  cardField.innerHTML = "";
+function renderScraps() {
+  scrapsField.innerHTML = "";
 
-  if (tasks.length === 0) {
-    cardField.innerHTML = "Todas as tarefas realizadas!";
+  if (scraps.length === 0) {
+    scrapsField.innerHTML = "Todas as tarefas realizadas!";
   }
 
-  for (const task of tasks) {
-    let cardTitle = document.createTextNode(task.title);
-    let cardText = document.createTextNode(task.message);
+  for (const scrap of scraps) {
+    let cardTitle = document.createTextNode(scrap.title);
+    let cardText = document.createTextNode(scrap.message);
 
     let card = document.createElement("div");
     card.className = "message-cards card text-white bg-dark m-2 col-3";
@@ -33,37 +33,37 @@ function renderTasks() {
     cardBody.appendChild(cardParagraph);
     card.appendChild(cardHeader);
     card.appendChild(cardBody);
-    cardField.appendChild(card);
+    scrapsField.appendChild(card);
   }
 }
 
 messageField.onkeypress = function (event) {
   if (event.keyCode === 10) {
-    createTask();
+    createScrap();
   }
 };
 
 titleInput.onkeypress = function (event) {
   if (event.keyCode === 13) {
-    createTask();
+    createScrap();
   }
 };
 
-renderTasks();
+renderScraps();
 
-function createTask() {
+function createScrap() {
   if (messageField.value === "" || titleInput.value.length > 30) {
     alert("DADOS INVÁLIDOS");
   } else {
     let title = titleInput.value;
     let message = messageField.value;
 
-    tasks.push({ title, message });
+    scraps.push({ title, message });
     messageField.value = "";
     titleInput.value = "";
 
-    renderTasks();
+    renderScraps();
   }
 }
 
-btnInput.onclick = createTask;
+btnInput.onclick = createScrap;
