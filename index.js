@@ -1,7 +1,10 @@
 let scrapsField = document.getElementById("scrapsField");
 let addScrapBtn = document.getElementById("inputButton");
 let titleInput = document.getElementById("titleInput");
+let editTitleInput = document.getElementById("editTitleInput");
 let messageField = document.getElementById("messageField");
+let editMessageField = document.getElementById("editMessageField");
+let btnSaveEdit = document.getElementById("saveEdit");
 
 let scraps = [];
 
@@ -23,7 +26,7 @@ function renderScraps() {
 }
 
 function addScrap() {
-  if (messageField.value === "" || titleInput.value.length > 30) {
+  if (messageField.value === "" || titleInput.value.length > 60) {
     alert("DADOS INVÁLIDOS");
   } else {
     let title = titleInput.value;
@@ -49,7 +52,10 @@ titleInput.onkeypress = function (event) {
   }
 };
 
-
+function deleteScrap(position) {
+  scraps.splice(position, 1);
+  renderScraps();
+}
 
 function createScrapCard(title, message, position) {
   return `
@@ -59,10 +65,31 @@ function createScrapCard(title, message, position) {
       <p class="card-text">
         ${message}
       </p>
+      <div class="w-100 d-flex justify-content-center pr-2 pb-2">
+        <button type="button" class="btn btn-primary btn-sm bg-danger" onclick="deleteScrap(${position})">Excluir</button>
+        <button type="button" class="btn btn-secondary btn-sm bg-warning text-dark" onclick="openEditModal(${position})">Editar</button>
+    </div>
     </div>
   </div>
   `;
 }
 
+function openEditModal(position) {
+  $("#editModal").modal("toggle");
+  editTitleInput.value = scraps[position].title;
+  editMessageField.value = scraps[position].message;
+  btnSaveEdit.setAttribute("onclick", `saveChanges(${position})`);
+}
+
+function saveChanges(position) {
+  let title = editTitleInput.value;
+  let message = editMessageField.value;
+  scraps[position].title.value = title;
+  scraps[position].message.value = message;
+  renderScraps();
+}
+
 renderScraps();
 addScrapBtn.onclick = addScrap;
+
+
