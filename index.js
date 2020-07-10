@@ -82,14 +82,13 @@ function openEditModal(position) {
 }
 
 function saveChanges(position) {
+  $("#editModal").modal("toggle");
   let title = editTitleInput.value;
   let message = editMessageField.value;
-  scraps[position].title.value = title;
-  scraps[position].message.value = message;
-  renderScraps();
+  scraps[position].title = title;
+  scraps[position].message = message;
+  renderScraps(position);
 }
 
 renderScraps();
 addScrapBtn.onclick = addScrap;
-
-
