@@ -86,8 +86,8 @@ function openEditModal(position) {
 function saveChanges(position) {
   if (editMessageField.value === "") {
     alert("Você não pode deixar a aba 'Mensagem' em branco!");
-  } else if (titleInput.value === "" || titleInput.value.length > 100) {
-    alert("Insira um título (com até 100 caracteres");
+  } else if (titleInput.value.length > 100) {
+    alert("Insira um título (com até 100 caracteres)");
   } else {
     $("#editModal").modal("toggle");
     let title = editTitleInput.value;
