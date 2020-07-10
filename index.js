@@ -26,8 +26,10 @@ function renderScraps() {
 }
 
 function addScrap() {
-  if (messageField.value === "" || titleInput.value.length > 60) {
-    alert("DADOS INVÁLIDOS");
+  if (titleInput.value === "" || titleInput.value.length > 60) {
+    alert("Insira um título (com menos de 60 caracteres)");
+  } else if (messageField.value === "") {
+    alert("Você não pode deixar essa aba em branco!");
   } else {
     let title = titleInput.value;
     let message = messageField.value;
