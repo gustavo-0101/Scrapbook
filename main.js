@@ -1,102 +1,87 @@
-let scrapsField = document.getElementById("scrapsField");
-let addScrapBtn = document.getElementById("inputButton");
-let titleInput = document.getElementById("titleInput");
-let editTitleInput = document.getElementById("editTitleInput");
-let messageField = document.getElementById("messageField");
-let editMessageField = document.getElementById("editMessageField");
-let btnSaveEdit = document.getElementById("saveEdit");
+class TaskList {
+  constructor() {
+    this.titleInput = document.getElementById("titleInput");
+    this.messageInput = document.getElementById("messageField");
+    this.addBtn = document.getElementById("inputButton");
+    this.scrapsField = document.getElementById("scrapsField");
 
-let scraps = [];
+    this.scraps = [];
 
-function renderScraps() {
-  scrapsField.innerHTML = "";
-
-  if (scraps.length === 0) {
-    scrapsField.innerHTML = "Todas as tarefas realizadas!";
+    this.registerAddScrapBtnEvent();
   }
 
-  for (const scrap of scraps) {
-    let position = scraps.indexOf(scrap);
-    scrapsField.innerHTML += createScrapCard(
-      scrap.title,
-      scrap.message,
-      position
-    );
+  generateScrapId() {
+    return this.scraps.length + 1;
+  }
+
+  registerAddScrapBtnEvent() {
+    this.addBtn.onclick = () => this.addNewScrap();
+  }
+
+  setButtonEvent() {
+    document.querySelectorAll(".delete-button").forEach((item) => {
+      item.onclick = (event) => this.deleteScrap(event);
+    });
+  }
+
+  renderScraps() {
+    this.scrapsField.innerHTML = "";
+
+    for (const scrap of this.scraps) {
+      const cardHtml = this.createScrapCard(
+        scrap.id,
+        scrap.title,
+        scrap.message
+      );
+      this.insertHtml(cardHtml);
+    }
+    this.setButtonEvent();
+  }
+
+  addNewScrap() {
+    const id = this.generateScrapId();
+    const title = this.titleInput.value;
+    const message = this.messageInput.value;
+
+    this.titleInput.value = "";
+    this.messageInput.value = "";
+
+    this.scraps.push({ id, title, message });
+
+    this.renderScraps();
+  }
+
+  deleteScrap(event) {
+    event.path[3].remove();
+
+    const scrapId = event.path[3].getAttribute("id-scrap");
+
+    const scrapIndex = this.scraps.findIndex((item) => {
+      return item.id == scrapId;
+    });
+
+    this.scraps.splice(scrapIndex, 1);
+  }
+
+  insertHtml(html) {
+    this.scrapsField.innerHTML += html;
+  }
+
+  createScrapCard(id, title, message) {
+    return `
+      <div class="message-cards card text-white bg-dark m-2 col-3 id-scrap="${id}">
+        <div class="card-header font-weight-bold text-center">${title}</div>
+        <div class="card-body">
+          <p class="card-text">
+            ${message}
+          </p>
+          <div class="w-100 d-flex justify-content-center pr-2 pb-2">
+            <button type="button" class="btn btn-primary btn-sm bg-danger delete-button">Excluir</button>
+            <button type="button" class="btn btn-secondary btn-sm bg-warning text-dark">Editar</button>
+        </div>
+        </div>
+      </div>
+      `;
   }
 }
-
-function addScrap() {
-  if (titleInput.value === "" || titleInput.value.length > 100) {
-    alert("Insira um título (de até 100 caracteres)");
-  } else if (messageField.value === "") {
-    alert("Você não pode deixar a aba 'Mensagem' em branco!");
-  } else {
-    let title = titleInput.value;
-    let message = messageField.value;
-
-    scraps.push({ title, message });
-    messageField.value = "";
-    titleInput.value = "";
-
-    renderScraps();
-  }
-}
-
-messageField.onkeypress = function (event) {
-  if (event.keyCode === 10) {
-    addScrap();
-  }
-};
-
-titleInput.onkeypress = function (event) {
-  if (event.keyCode === 13) {
-    addScrap();
-  }
-};
-
-function deleteScrap(position) {
-  scraps.splice(position, 1);
-  renderScraps();
-}
-
-function createScrapCard(title, message, position) {
-  return `
-  <div class="message-cards card text-white bg-dark m-2 col-3">
-    <div class="card-header font-weight-bold text-center">${title}</div>
-    <div class="card-body">
-      <p class="card-text">
-        ${message}
-      </p>
-      <div class="w-100 d-flex justify-content-center pr-2 pb-2">
-        <button type="button" class="btn btn-primary btn-sm bg-danger" onclick="deleteScrap(${position})">Excluir</button>
-        <button type="button" class="btn btn-secondary btn-sm bg-warning text-dark" onclick="openEditModal(${position})">Editar</button>
-    </div>
-    </div>
-  </div>
-  `;
-}
-
-function openEditModal(position) {
-  $("#editModal").modal("toggle");
-  editTitleInput.value = scraps[position].title;
-  editMessageField.value = scraps[position].message;
-  btnSaveEdit.setAttribute("onclick", `saveChanges(${position})`);
-}
-
-function saveChanges(position) {
-  if (editMessageField.value === "") {
-    alert("Você não pode deixar a aba 'Mensagem' em branco!");
-  } else if (titleInput.value.length > 100) {
-    alert("Insira um título (com até 100 caracteres)");
-  } else {
-    $("#editModal").modal("toggle");
-    let title = editTitleInput.value;
-    let message = editMessageField.value;
-    scraps[position].title = title;
-    scraps[position].message = message;
-    renderScraps(position);
-  }
-}
-
-renderScraps();
-addScrapBtn.onclick = addScrap;
+new TaskList();

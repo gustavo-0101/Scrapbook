@@ -6,98 +6,109 @@ function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o =
 
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
-var scrapsField = document.getElementById("scrapsField");
-var addScrapBtn = document.getElementById("inputButton");
-var titleInput = document.getElementById("titleInput");
-var editTitleInput = document.getElementById("editTitleInput");
-var messageField = document.getElementById("messageField");
-var editMessageField = document.getElementById("editMessageField");
-var btnSaveEdit = document.getElementById("saveEdit");
-var scraps = [];
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function renderScraps() {
-  scrapsField.innerHTML = "";
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
-  if (scraps.length === 0) {
-    scrapsField.innerHTML = "Todas as tarefas realizadas!";
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var TaskList = /*#__PURE__*/function () {
+  function TaskList() {
+    _classCallCheck(this, TaskList);
+
+    this.titleInput = document.getElementById("titleInput");
+    this.messageInput = document.getElementById("messageField");
+    this.addBtn = document.getElementById("inputButton");
+    this.scrapsField = document.getElementById("scrapsField");
+    this.scraps = [];
+    this.registerAddScrapBtnEvent();
   }
 
-  var _iterator = _createForOfIteratorHelper(scraps),
-      _step;
-
-  try {
-    for (_iterator.s(); !(_step = _iterator.n()).done;) {
-      var scrap = _step.value;
-      var position = scraps.indexOf(scrap);
-      scrapsField.innerHTML += createScrapCard(scrap.title, scrap.message, position);
+  _createClass(TaskList, [{
+    key: "generateScrapId",
+    value: function generateScrapId() {
+      return this.scraps.length + 1;
     }
-  } catch (err) {
-    _iterator.e(err);
-  } finally {
-    _iterator.f();
-  }
-}
+  }, {
+    key: "registerAddScrapBtnEvent",
+    value: function registerAddScrapBtnEvent() {
+      var _this = this;
 
-function addScrap() {
-  if (titleInput.value === "" || titleInput.value.length > 100) {
-    alert("Insira um título (de até 100 caracteres)");
-  } else if (messageField.value === "") {
-    alert("Você não pode deixar a aba 'Mensagem' em branco!");
-  } else {
-    var title = titleInput.value;
-    var message = messageField.value;
-    scraps.push({
-      title: title,
-      message: message
-    });
-    messageField.value = "";
-    titleInput.value = "";
-    renderScraps();
-  }
-}
+      this.addBtn.onclick = function () {
+        return _this.addNewScrap();
+      };
+    }
+  }, {
+    key: "setButtonEvent",
+    value: function setButtonEvent() {
+      var _this2 = this;
 
-messageField.onkeypress = function (event) {
-  if (event.keyCode === 10) {
-    addScrap();
-  }
-};
+      document.querySelectorAll(".delete-button").forEach(function (item) {
+        item.onclick = function (event) {
+          return _this2.deleteScrap(event);
+        };
+      });
+    }
+  }, {
+    key: "renderScraps",
+    value: function renderScraps() {
+      this.scrapsField.innerHTML = "";
 
-titleInput.onkeypress = function (event) {
-  if (event.keyCode === 13) {
-    addScrap();
-  }
-};
+      var _iterator = _createForOfIteratorHelper(this.scraps),
+          _step;
 
-function deleteScrap(position) {
-  scraps.splice(position, 1);
-  renderScraps();
-}
+      try {
+        for (_iterator.s(); !(_step = _iterator.n()).done;) {
+          var scrap = _step.value;
+          var cardHtml = this.createScrapCard(scrap.id, scrap.title, scrap.message);
+          this.insertHtml(cardHtml);
+        }
+      } catch (err) {
+        _iterator.e(err);
+      } finally {
+        _iterator.f();
+      }
 
-function createScrapCard(title, message, position) {
-  return "\n  <div class=\"message-cards card text-white bg-dark m-2 col-3\">\n    <div class=\"card-header font-weight-bold text-center\">".concat(title, "</div>\n    <div class=\"card-body\">\n      <p class=\"card-text\">\n        ").concat(message, "\n      </p>\n      <div class=\"w-100 d-flex justify-content-center pr-2 pb-2\">\n        <button type=\"button\" class=\"btn btn-primary btn-sm bg-danger\" onclick=\"deleteScrap(").concat(position, ")\">Excluir</button>\n        <button type=\"button\" class=\"btn btn-secondary btn-sm bg-warning text-dark\" onclick=\"openEditModal(").concat(position, ")\">Editar</button>\n    </div>\n    </div>\n  </div>\n  ");
-}
+      this.setButtonEvent();
+    }
+  }, {
+    key: "addNewScrap",
+    value: function addNewScrap() {
+      var id = this.generateScrapId();
+      var title = this.titleInput.value;
+      var message = this.messageInput.value;
+      this.titleInput.value = "";
+      this.messageInput.value = "";
+      this.scraps.push({
+        id: id,
+        title: title,
+        message: message
+      });
+      this.renderScraps();
+    }
+  }, {
+    key: "deleteScrap",
+    value: function deleteScrap(event) {
+      event.path[3].remove();
+      var scrapId = event.path[3].getAttribute("id-scrap");
+      var scrapIndex = this.scraps.findIndex(function (item) {
+        return item.id == scrapId;
+      });
+      this.scraps.splice(scrapIndex, 1);
+    }
+  }, {
+    key: "insertHtml",
+    value: function insertHtml(html) {
+      this.scrapsField.innerHTML += html;
+    }
+  }, {
+    key: "createScrapCard",
+    value: function createScrapCard(id, title, message) {
+      return "\n      <div class=\"message-cards card text-white bg-dark m-2 col-3 id-scrap=\"".concat(id, "\">\n        <div class=\"card-header font-weight-bold text-center\">").concat(title, "</div>\n        <div class=\"card-body\">\n          <p class=\"card-text\">\n            ").concat(message, "\n          </p>\n          <div class=\"w-100 d-flex justify-content-center pr-2 pb-2\">\n            <button type=\"button\" class=\"btn btn-primary btn-sm bg-danger delete-button\">Excluir</button>\n            <button type=\"button\" class=\"btn btn-secondary btn-sm bg-warning text-dark\">Editar</button>\n        </div>\n        </div>\n      </div>\n      ");
+    }
+  }]);
 
-function openEditModal(position) {
-  $("#editModal").modal("toggle");
-  editTitleInput.value = scraps[position].title;
-  editMessageField.value = scraps[position].message;
-  btnSaveEdit.setAttribute("onclick", "saveChanges(".concat(position, ")"));
-}
+  return TaskList;
+}();
 
-function saveChanges(position) {
-  if (editMessageField.value === "") {
-    alert("Você não pode deixar a aba 'Mensagem' em branco!");
-  } else if (titleInput.value.length > 100) {
-    alert("Insira um título (com até 100 caracteres)");
-  } else {
-    $("#editModal").modal("toggle");
-    var title = editTitleInput.value;
-    var message = editMessageField.value;
-    scraps[position].title = title;
-    scraps[position].message = message;
-    renderScraps(position);
-  }
-}
-
-renderScraps();
-addScrapBtn.onclick = addScrap;
+new TaskList();
