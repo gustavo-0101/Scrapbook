@@ -82,17 +82,23 @@ var TaskList = /*#__PURE__*/function () {
   }, {
     key: "addNewScrap",
     value: function addNewScrap() {
-      var id = this.generateScrapId();
-      var title = this.titleInput.value;
-      var message = this.messageInput.value;
-      this.titleInput.value = "";
-      this.messageInput.value = "";
-      this.scraps.push({
-        id: id,
-        title: title,
-        message: message
-      });
-      this.renderScraps();
+      if (this.titleInput.value === "" || this.titleInput.value.length > 100) {
+        alert("Insira um título (de até 100 caracteres)");
+      } else if (this.messageInput.value === "") {
+        alert("Você não pode deixar a aba 'Mensagem' em branco!");
+      } else {
+        var id = this.generateScrapId();
+        var title = this.titleInput.value;
+        var message = this.messageInput.value;
+        this.titleInput.value = "";
+        this.messageInput.value = "";
+        this.scraps.push({
+          id: id,
+          title: title,
+          message: message
+        });
+        this.renderScraps();
+      }
     }
   }, {
     key: "deleteScrap",
@@ -124,14 +130,20 @@ var TaskList = /*#__PURE__*/function () {
   }, {
     key: "saveChanges",
     value: function saveChanges(scrapIndex) {
-      var title = this.editTitleInput.value;
-      var message = this.editMessageField.value;
-      this.scraps[scrapIndex] = {
-        title: title,
-        message: message
-      };
-      this.renderScraps();
-      $("#editModal").modal("hide");
+      if (this.editMessageField.value === "") {
+        alert("Você não pode deixar a aba 'Mensagem' em branco!");
+      } else if (this.editTitleInput.value === "" || this.editTitleInput.value.length > 100) {
+        alert("Insira um título (com até 100 caracteres)");
+      } else {
+        var title = this.editTitleInput.value;
+        var message = this.editMessageField.value;
+        this.scraps[scrapIndex] = {
+          title: title,
+          message: message
+        };
+        this.renderScraps();
+        $("#editModal").modal("hide");
+      }
     }
   }, {
     key: "insertHtml",

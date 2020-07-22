@@ -45,16 +45,22 @@ class TaskList {
   }
 
   addNewScrap() {
-    const id = this.generateScrapId();
-    const title = this.titleInput.value;
-    const message = this.messageInput.value;
+    if (this.titleInput.value === "" || this.titleInput.value.length > 100) {
+      alert("Insira um título (de até 100 caracteres)");
+    } else if (this.messageInput.value === "") {
+      alert("Você não pode deixar a aba 'Mensagem' em branco!");
+    } else {
+      const id = this.generateScrapId();
+      const title = this.titleInput.value;
+      const message = this.messageInput.value;
 
-    this.titleInput.value = "";
-    this.messageInput.value = "";
+      this.titleInput.value = "";
+      this.messageInput.value = "";
 
-    this.scraps.push({ id, title, message });
+      this.scraps.push({ id, title, message });
 
-    this.renderScraps();
+      this.renderScraps();
+    }
   }
 
   deleteScrap(event) {
@@ -85,12 +91,21 @@ class TaskList {
   }
 
   saveChanges(scrapIndex) {
-    let title = this.editTitleInput.value;
-    let message = this.editMessageField.value;
+    if (this.editMessageField.value === "") {
+      alert("Você não pode deixar a aba 'Mensagem' em branco!");
+    } else if (
+      this.editTitleInput.value === "" ||
+      this.editTitleInput.value.length > 100
+    ) {
+      alert("Insira um título (com até 100 caracteres)");
+    } else {
+      let title = this.editTitleInput.value;
+      let message = this.editMessageField.value;
 
-    this.scraps[scrapIndex] = { title, message };
-    this.renderScraps();
-    $("#editModal").modal("hide");
+      this.scraps[scrapIndex] = { title, message };
+      this.renderScraps();
+      $("#editModal").modal("hide");
+    }
   }
 
   insertHtml(html) {
