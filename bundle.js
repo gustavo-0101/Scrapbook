@@ -20,6 +20,9 @@ var TaskList = /*#__PURE__*/function () {
     this.messageInput = document.getElementById("messageField");
     this.addBtn = document.getElementById("inputButton");
     this.scrapsField = document.getElementById("scrapsField");
+    this.editTitleInput = document.getElementById("editTitleInput");
+    this.editMessageField = document.getElementById("editMessageField");
+    this.btnSaveEdit = document.getElementById("saveEdit");
     this.scraps = [];
     this.registerAddScrapBtnEvent();
   }
@@ -39,13 +42,18 @@ var TaskList = /*#__PURE__*/function () {
       };
     }
   }, {
-    key: "setButtonEvent",
-    value: function setButtonEvent() {
+    key: "setButtonsEvents",
+    value: function setButtonsEvents() {
       var _this2 = this;
 
       document.querySelectorAll(".delete-button").forEach(function (item) {
         item.onclick = function (event) {
           return _this2.deleteScrap(event);
+        };
+      });
+      document.querySelectorAll(".edit-button").forEach(function (item) {
+        item.onclick = function (event) {
+          return _this2.openEditModal(event);
         };
       });
     }
@@ -69,7 +77,7 @@ var TaskList = /*#__PURE__*/function () {
         _iterator.f();
       }
 
-      this.setButtonEvent();
+      this.setButtonsEvents();
     }
   }, {
     key: "addNewScrap",
@@ -89,22 +97,52 @@ var TaskList = /*#__PURE__*/function () {
   }, {
     key: "deleteScrap",
     value: function deleteScrap(event) {
-      event.path[3].remove();
-      var scrapId = event.path[3].getAttribute("id-scrap");
+      event.path[2].remove();
+      var scrapId = event.path[2].getAttribute("id-scrap");
       var scrapIndex = this.scraps.findIndex(function (item) {
         return item.id == scrapId;
       });
       this.scraps.splice(scrapIndex, 1);
     }
   }, {
+    key: "openEditModal",
+    value: function openEditModal(event) {
+      var _this3 = this;
+
+      $("#editModal").modal("toggle");
+      var scrapId = event.path[2].getAttribute("id-scrap");
+      var scrapIndex = this.scraps.findIndex(function (item) {
+        return item.id == scrapId;
+      });
+      this.editTitleInput.value = this.scraps[scrapIndex].title;
+      this.editMessageField.value = this.scraps[scrapIndex].message;
+
+      this.btnSaveEdit.onclick = function () {
+        return _this3.saveChanges(scrapIndex);
+      };
+    }
+  }, {
+    key: "saveChanges",
+    value: function saveChanges(scrapIndex) {
+      var title = this.editTitleInput.value;
+      var message = this.editMessageField.value;
+      this.scraps[scrapIndex] = {
+        title: title,
+        message: message
+      };
+      this.renderScraps();
+      $("#editModal").modal("hide");
+    }
+  }, {
     key: "insertHtml",
     value: function insertHtml(html) {
+      1;
       this.scrapsField.innerHTML += html;
     }
   }, {
     key: "createScrapCard",
     value: function createScrapCard(id, title, message) {
-      return "\n      <div class=\"message-cards card text-white bg-dark m-2 col-3 id-scrap=\"".concat(id, "\">\n        <div class=\"card-header font-weight-bold text-center\">").concat(title, "</div>\n        <div class=\"card-body\">\n          <p class=\"card-text\">\n            ").concat(message, "\n          </p>\n          <div class=\"w-100 d-flex justify-content-center pr-2 pb-2\">\n            <button type=\"button\" class=\"btn btn-primary btn-sm bg-danger delete-button\">Excluir</button>\n            <button type=\"button\" class=\"btn btn-secondary btn-sm bg-warning text-dark\">Editar</button>\n        </div>\n        </div>\n      </div>\n      ");
+      return "\n      <div class=\"message-cards card text-white bg-dark m-2 col-3\" id-scrap=\"".concat(id, "\">\n        <div class=\"card-header font-weight-bold text-center\">").concat(title, "</div>\n          <p class=\"card-text\">\n            ").concat(message, "\n          </p>\n          <div class=\"w-100 d-flex justify-content-center pr-2 pb-2\">\n            <button type=\"button\" class=\"btn btn-primary btn-sm bg-danger delete-button\">Excluir</button>\n            <button type=\"button\" class=\"btn btn-secondary btn-sm bg-warning text-dark edit-button\">Editar</button>\n        </div>\n      </div>\n      ");
     }
   }]);
 
