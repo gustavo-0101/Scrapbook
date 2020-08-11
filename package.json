@@ -5,12 +5,20 @@
   "repository": "https://github.com/gustavo-0101/Scrapbook.git",
   "author": "gustavo-0101 <guga-rd@hotmail.com>",
   "license": "MIT",
-  "dependencies": {
+  "devDependencies": {
     "@babel/cli": "^7.10.5",
     "@babel/core": "^7.10.5",
-    "@babel/preset-env": "^7.10.4"
+    "@babel/preset-env": "^7.10.4",
+    "webpack": "^4.44.1",
+    "webpack-cli": "^3.3.12"
   },
   "scripts": {
     "dev": "babel ./main.js -o ./bundle.js -w"
+  },
+  "dependencies": {
+    "-": "^0.0.1",
+    "D": "^1.0.0",
+    "babel-loader": "^8.1.0",
+    "webpack-dev-server": "^3.11.0"
   }
 }
