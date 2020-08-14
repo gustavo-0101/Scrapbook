@@ -1,135 +1,152 @@
-// class TaskList {
-//   constructor() {
-//     this.titleInput = document.getElementById("titleInput");
-//     this.messageInput = document.getElementById("messageField");
-//     this.addBtn = document.getElementById("inputButton");
-//     this.scrapsField = document.getElementById("scrapsField");
-//     this.editTitleInput = document.getElementById("editTitleInput");
-//     this.editMessageField = document.getElementById("editMessageField");
-//     this.btnSaveEdit = document.getElementById("saveEdit");
+import api from "./services/api";
 
-//     this.scraps = [];
+async function teste() {
+  const response = await api.get("/scraps");
 
-//     this.registerAddScrapBtnEvent();
-//   }
+  console.log(response);
+}
 
-//   generateScrapId() {
-//     return this.scraps.length + 1;
-//   }
+teste();
 
-//   registerAddScrapBtnEvent() {
-//     this.addBtn.onclick = () => this.addNewScrap();
-//   }
+class TaskList {
+  constructor() {
+    this.titleInput = document.getElementById("titleInput");
+    this.messageInput = document.getElementById("messageField");
+    this.addBtn = document.getElementById("inputButton");
+    this.scrapsField = document.getElementById("scrapsField");
+    this.editTitleInput = document.getElementById("editTitleInput");
+    this.editMessageField = document.getElementById("editMessageField");
+    this.btnSaveEdit = document.getElementById("saveEdit");
 
-//   setButtonsEvents() {
-//     document.querySelectorAll(".delete-button").forEach((item) => {
-//       item.onclick = (event) => this.deleteScrap(event);
-//     });
-//     document.querySelectorAll(".edit-button").forEach((item) => {
-//       item.onclick = (event) => this.openEditModal(event);
-//     });
-//   }
+    this.scraps = [];
 
-//   renderScraps() {
-//     this.scrapsField.innerHTML = "";
+    this.getScraps();
 
-//     for (const scrap of this.scraps) {
-//       const cardHtml = this.createScrapCard(
-//         scrap.id,
-//         scrap.title,
-//         scrap.message
-//       );
-//       this.insertHtml(cardHtml);
-//     }
-//     this.setButtonsEvents();
-//   }
+    this.registerAddScrapBtnEvent();
+  }
 
-//   addNewScrap() {
-//     if (this.titleInput.value === "" || this.titleInput.value.length > 100) {
-//       alert("Insira um título (de até 100 caracteres)");
-//     } else if (this.messageInput.value === "") {
-//       alert("Você não pode deixar a aba 'Mensagem' em branco!");
-//     } else {
-//       const id = this.generateScrapId();
-//       const title = this.titleInput.value;
-//       const message = this.messageInput.value;
+  async getScraps() {
+    const { data: scraps } = await api.get("/scraps");
 
-//       this.titleInput.value = "";
-//       this.messageInput.value = "";
+    this.scraps = scraps;
+    this.renderScraps();
+  }
 
-//       this.scraps.push({ id, title, message });
+  registerAddScrapBtnEvent() {
+    this.addBtn.onclick = () => this.addNewScrap();
+  }
 
-//       this.renderScraps();
-//     }
-//   }
+  setButtonsEvents() {
+    document.querySelectorAll(".delete-button").forEach((item) => {
+      item.onclick = (event) => this.deleteScrap(event);
+    });
+    document.querySelectorAll(".edit-button").forEach((item) => {
+      item.onclick = (event) => this.openEditModal(event);
+    });
+  }
 
-//   deleteScrap(event) {
-//     event.path[2].remove();
+  renderScraps() {
+    this.scrapsField.innerHTML = "";
 
-//     const scrapId = event.path[2].getAttribute("id-scrap");
+    for (const scrap of this.scraps) {
+      const cardHtml = this.createScrapCard(
+        scrap.id,
+        scrap.title,
+        scrap.message
+      );
+      this.insertHtml(cardHtml);
+    }
+    this.setButtonsEvents();
+  }
 
-//     const scrapIndex = this.scraps.findIndex((item) => {
-//       return item.id == scrapId;
-//     });
+  async addNewScrap() {
+    if (this.titleInput.value === "" || this.titleInput.value.length > 100) {
+      alert("Insira um título (de até 100 caracteres)");
+    } else if (this.messageInput.value === "") {
+      alert("Você não pode deixar a aba 'Mensagem' em branco!");
+    } else {
+      const newTitle = this.titleInput.value;
+      const newMessage = this.messageInput.value;
 
-//     this.scraps.splice(scrapIndex, 1);
-//   }
+      this.titleInput.value = "";
+      this.messageInput.value = "";
 
-//   openEditModal(event) {
-//     $("#editModal").modal("toggle");
+      const { data: id, title, message } = await api.post("/scraps", {
+        title: newTitle,
+        message: newMessage,
+      });
 
-//     const scrapId = event.path[2].getAttribute("id-scrap");
+      this.scraps.push({ id, title, message });
 
-//     const scrapIndex = this.scraps.findIndex((item) => {
-//       return item.id == scrapId;
-//     });
+      this.renderScraps();
+    }
+  }
 
-//     this.editTitleInput.value = this.scraps[scrapIndex].title;
-//     this.editMessageField.value = this.scraps[scrapIndex].message;
+  async deleteScrap(event) {
+    event.path[2].remove();
 
-//     this.btnSaveEdit.onclick = () => this.saveChanges(scrapIndex);
-//   }
+    const scrapId = event.path[2].getAttribute("id-scrap");
 
-//   saveChanges(scrapIndex) {
-//     if (this.editMessageField.value === "") {
-//       alert("Você não pode deixar a aba 'Mensagem' em branco!");
-//     } else if (
-//       this.editTitleInput.value === "" ||
-//       this.editTitleInput.value.length > 100
-//     ) {
-//       alert("Insira um título (com até 100 caracteres)");
-//     } else {
-//       let title = this.editTitleInput.value;
-//       let message = this.editMessageField.value;
+    await api.delete(`/scraps/${scrapId}`);
 
-//       this.scraps[scrapIndex] = { title, message };
-//       this.renderScraps();
-//       $("#editModal").modal("hide");
-//     }
-//   }
+    const scrapIndex = this.scraps.findIndex((item) => {
+      return item.id == scrapId;
+    });
 
-//   insertHtml(html) {
-//     1;
-//     this.scrapsField.innerHTML += html;
-//   }
+    this.scraps.splice(scrapIndex, 1);
+  }
 
-//   createScrapCard(id, title, message) {
-//     return `
-//       <div class="message-cards card text-white bg-dark m-2 col-3" id-scrap="${id}">
-//         <div class="card-header font-weight-bold text-center">${title}</div>
-//           <p class="card-text">
-//             ${message}
-//           </p>
-//           <div class="w-100 d-flex justify-content-center pr-2 pb-2">
-//             <button type="button" class="btn btn-primary btn-sm bg-danger delete-button">Excluir</button>
-//             <button type="button" class="btn btn-secondary btn-sm bg-warning text-dark edit-button">Editar</button>
-//         </div>
-//       </div>
-//       `;
-//   }
-// }
-// new TaskList();
+  openEditModal(event) {
+    $("#editModal").modal("toggle");
 
-import { soma } from "./soma";
+    const scrapId = event.path[2].getAttribute("id-scrap");
 
-alert(soma(1, 2));
+    const scrapIndex = this.scraps.findIndex((item) => {
+      return item.id == scrapId;
+    });
+
+    this.editTitleInput.value = this.scraps[scrapIndex].title;
+    this.editMessageField.value = this.scraps[scrapIndex].message;
+
+    this.btnSaveEdit.onclick = () => this.saveChanges(scrapIndex);
+  }
+
+  saveChanges(scrapIndex) {
+    if (this.editMessageField.value === "") {
+      alert("Você não pode deixar a aba 'Mensagem' em branco!");
+    } else if (
+      this.editTitleInput.value === "" ||
+      this.editTitleInput.value.length > 100
+    ) {
+      alert("Insira um título (com até 100 caracteres)");
+    } else {
+      let title = this.editTitleInput.value;
+      let message = this.editMessageField.value;
+
+      this.scraps[scrapIndex] = { title, message };
+      this.renderScraps();
+      $("#editModal").modal("hide");
+    }
+  }
+
+  insertHtml(html) {
+    1;
+    this.scrapsField.innerHTML += html;
+  }
+
+  createScrapCard(id, title, message) {
+    return `
+      <div class="message-cards card text-white bg-dark m-2 col-3" id-scrap="${id}">
+        <div class="card-header font-weight-bold text-center">${title}</div>
+          <p class="card-text">
+            ${message}
+          </p>
+          <div class="w-100 d-flex justify-content-center pr-2 pb-2">
+            <button type="button" class="btn btn-primary btn-sm bg-danger delete-button">Excluir</button>
+            <button type="button" class="btn btn-secondary btn-sm bg-warning text-dark edit-button">Editar</button>
+        </div>
+      </div>
+      `;
+  }
+}
+new TaskList();
