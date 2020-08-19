@@ -87,13 +87,13 @@ class TaskList {
 
     const scrapId = event.path[2].getAttribute("id-scrap");
 
-    await api.delete(`/scraps/${scrapId}`);
-
     const scrapIndex = this.scraps.findIndex((item) => {
       return item.id == scrapId;
     });
 
     this.scraps.splice(scrapIndex, 1);
+
+    await api.delete(`/scraps/${scrapId}`);
   }
 
   openEditModal(event) {
