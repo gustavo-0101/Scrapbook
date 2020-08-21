@@ -71,7 +71,9 @@ class TaskList {
       this.titleInput.value = "";
       this.messageInput.value = "";
 
-      const { data: id, title, message } = await api.post("/scraps", {
+      const {
+        data: { id, title, message },
+      } = await api.post("/scraps", {
         title: newTitle,
         message: newMessage,
       });
@@ -87,13 +89,13 @@ class TaskList {
 
     const scrapId = event.path[2].getAttribute("id-scrap");
 
+    await api.delete(`/scraps/${scrapId}`);
+
     const scrapIndex = this.scraps.findIndex((item) => {
       return item.id == scrapId;
     });
 
     this.scraps.splice(scrapIndex, 1);
-
-    await api.delete(`/scraps/${scrapId}`);
   }
 
   openEditModal(event) {
@@ -108,10 +110,10 @@ class TaskList {
     this.editTitleInput.value = this.scraps[scrapIndex].title;
     this.editMessageField.value = this.scraps[scrapIndex].message;
 
-    this.btnSaveEdit.onclick = () => this.saveChanges(scrapIndex);
+    this.btnSaveEdit.onclick = () => this.saveChanges(scrapIndex, scrapId);
   }
 
-  saveChanges(scrapIndex) {
+  async saveChanges(scrapIndex, scrapId) {
     if (this.editMessageField.value === "") {
       alert("Você não pode deixar a aba 'Mensagem' em branco!");
     } else if (
@@ -123,7 +125,12 @@ class TaskList {
       let title = this.editTitleInput.value;
       let message = this.editMessageField.value;
 
-      this.scraps[scrapIndex] = { title, message };
+      const { data: scrap } = await api.put(`/scraps/${scrapId}`, {
+        title,
+        message,
+      });
+
+      this.scraps[scrapIndex] = scrap;
       this.renderScraps();
       $("#editModal").modal("hide");
     }
